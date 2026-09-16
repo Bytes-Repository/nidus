@@ -1,0 +1,15 @@
+use "bytes -> nidus" from "nidus"
+
+fn main() is
+    let src: string = "let y = x / 0\nwrite(y)\n"
+
+    let mut d: nidus::Diagnostic = nidus::error("dzielenie przez zero")
+    d = d.with_code("nidus::eval::div_zero")
+    d = d.with_source("main.ns", src)
+    d = d.with_label(nidus::primary_label(8, 5, "tu nie można dzielić przez zero"))
+    d = d.with_help("sprawdź mianownik przed wykonaniem dzielenia")
+    d = d.with_url("https://example.com/errors/div-zero")
+
+    ;; report() sam dobierze styl i motyw do terminala/środowiska
+    nidus::report(d)
+end
