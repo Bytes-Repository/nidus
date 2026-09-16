@@ -1,0 +1,35 @@
+use "bytes -> nidus" from "nidus"
+
+fn main() is
+    let src: string = "let cfg = load(\"app.toml\")\nlet port = cfg.port\n"
+
+    let mut d: nidus::Diagnostic = nidus::error("brakujący klucz `port` w konfiguracji")
+    d = d.with_code("nidus::config::missing_key")
+    d = d.with_source("app.toml", src)
+    d = d.with_label(nidus::primary_label(42, 4, "ten klucz nie istnieje w pliku app.toml"))
+    d = d.with_help("dodaj `port = 8080` do sekcji [server]")
+    d = d.with_url("https://example.com/docs/config#port")
+
+    let theme: nidus::Theme = nidus::theme_mono()   ;; bez kolorów — czytelnie w każdym terminalu
+
+    write("=== graphical ===")
+    nidus::report_with(d, nidus::config_with(nidus::Style::Graphical, theme))
+
+    write("=== ascii ===")
+    nidus::report_with(d, nidus::config_with(nidus::Style::Ascii, theme))
+
+    write("=== narratable ===")
+    nidus::report_with(d, nidus::config_with(nidus::Style::Narratable, theme))
+
+    write("=== minimal ===")
+    nidus::report_with(d, nidus::config_with(nidus::Style::Minimal, theme))
+
+    write("=== json ===")
+    nidus::report_with(d, nidus::config_with(nidus::Style::Json, theme))
+
+    write("=== markdown ===")
+    nidus::report_with(d, nidus::config_with(nidus::Style::Markdown, theme))
+
+    write("=== github actions ===")
+    nidus::report_with(d, nidus::config_with(nidus::Style::GithubActions, theme))
+end
