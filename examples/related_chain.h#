@@ -1,0 +1,13 @@
+use "bytes -> nidus" from "nidus"
+
+fn main() is
+    let root_cause: nidus::Diagnostic = nidus::error("nie znaleziono pliku")
+    let cause: nidus::Diagnostic = root_cause.with_code("nidus::io::not_found")
+
+    let mut top: nidus::Diagnostic = nidus::error("nie udało się uruchomić serwera")
+    top = top.with_code("nidus::server::startup_failed")
+    top = top.with_help("upewnij się, że plik `config.toml` istnieje w katalogu roboczym")
+    top = top.with_related(cause)
+
+    nidus::report(top)
+end
